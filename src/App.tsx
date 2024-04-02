@@ -10,7 +10,7 @@ import { privateRoutes, publicRoutes } from "./routes/routes";
 function App() {
   return (
     <BrowserRouter>
-      <>
+      <div style={{ minHeight: "100vh" }}>
         <Routes>
           <Route element={<PrivateRouter />}>
             {privateRoutes.map((route, index) => {
@@ -39,7 +39,7 @@ function App() {
             })}
           </Route>
         </Routes>
-      </>
+      </div>
       <ToastContainer />
     </BrowserRouter>
   );

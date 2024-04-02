@@ -22,9 +22,9 @@ class BaseServices {
             case 400:
               return response;
             case 401:
-              localStorage.clear();
-              window.location.reload();
-              return;
+              // localStorage.clear();
+              // window.location.reload();
+              return response;
             case 403:
               // window.location.href = "/error";
               return response;
@@ -32,7 +32,8 @@ class BaseServices {
             case 404:
               return response;
             default:
-              return Promise.reject(error);
+              // return Promise.reject(error);
+              return response;
           }
         }
         return Promise.reject(error);

@@ -1,8 +1,9 @@
+@import url(https://db.onlinewebfonts.com/c/bab845ed46b9ada0916b126689b6d069?family=Sofia+Pro+Viet);
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  min-width: 100vw;
+  min-height: 100vh;
+  font-family: "Sofia Pro Viet";
 }
 
 .logo {
@@ -39,4 +40,8 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.modal-sm {
+  --bs-modal-width: 400px !important;
 }

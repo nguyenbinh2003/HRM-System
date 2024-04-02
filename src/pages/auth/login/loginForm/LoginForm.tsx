@@ -17,14 +17,15 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const handleSubmit = async (data: object) => {
     const login = await AuthServices.login(data);
-    console.log("🚀 ~ handleSubmit ~ login:", login);
     if (login.status < 400) {
+      localStorage.setItem("user-token", login.data.data.token);
       navigate("/employee");
       toast.success("Signed in successfully.");
       return;
+    } else {
+      toast.error("Incorrect Username, Password or Factory. Please try again!");
+      return;
     }
-    toast.error("Incorrect Username, Password or Factory. Please try again!");
-    return;
   };
   return (
     <Formik

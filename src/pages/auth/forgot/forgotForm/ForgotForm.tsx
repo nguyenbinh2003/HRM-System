@@ -13,7 +13,7 @@ export default function ForgotForm() {
     const forgot = await AuthServices.forgotPassword(data);
     console.log(forgot);
     if (forgot.status < 400) {
-      toast.success("We have sent you the OTP code, please check your email");
+      toast.success("We have sent you the OTP code, please check your email.");
       return;
     }
     toast.error("Please try again with an valid email address.");

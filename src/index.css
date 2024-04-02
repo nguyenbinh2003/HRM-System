@@ -39,6 +39,11 @@ h1 {
   line-height: 1.1;
 }
 
+li:hover {
+  background-color: transparent !important;
+  cursor: default !important;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
