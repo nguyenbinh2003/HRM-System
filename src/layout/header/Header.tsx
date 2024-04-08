@@ -4,19 +4,23 @@ import { Button, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Dropdown, MenuProps, Space } from "antd";
 import { useNavigate } from "react-router-dom";
+import classNames from "classnames/bind";
+import { useEffect, useState } from "react";
 
-import "./Header.css";
+import styles from "./Header.module.scss";
 import logo from "@/src/assets/Rectangle 4.png";
 import UserServices from "@/src/services/user/userServices";
-import { useEffect, useState } from "react";
-import { addUserStore } from "@/src/stores/userReducer";
-import { useAppDispatch } from "@/src/hooks/hooks";
+import { addUserStore, clearUserStore } from "@/src/stores/userReducer";
+import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
 
 const UserService = new UserServices();
+
+const cx = classNames.bind(styles);
 
 function Header() {
   const navigate = useNavigate();
   const [isShow, setIsShow] = useState<boolean>(false);
+  const user = useAppSelector((state) => state.user);
 
   const handleClose = () => setIsShow(false);
   const handleShow = () => setIsShow(true);
@@ -38,7 +42,7 @@ function Header() {
               className="rounded-circle me-2"
               src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png"
               alt="avatar.png"
-              style={{ maxWidth: "40px", cursor: "pointer" }}
+              style={{ maxWidth: "40px" }}
             />
             <h4>admin_test1</h4>
           </div>
@@ -75,7 +79,7 @@ function Header() {
           >
             Sign Out
           </Button>
-          <Link to={"/employee"} className="mb-4">
+          <Link to={"/settings/change-password"} className="mb-4">
             Reset Password
           </Link>
         </div>
@@ -83,42 +87,55 @@ function Header() {
       key: "3",
     },
   ];
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-  // const handleGetUserDetail = async () => {
-  //   const user = await UserService.detail();
-  //   console.log(user);
+  const handleGetUserDetail = async () => {
+    const user = await UserService.getUserDetail();
 
-  //   dispatch(addUserStore(user.data));
-  //   if (user.status < 400) {
-  //   }
-  // };
+    dispatch(addUserStore(user.data));
+    if (user.status < 400) {
+    }
+  };
 
-  // useEffect(() => {
-  //   handleGetUserDetail();
-  // }, []);
+  useEffect(() => {
+    handleGetUserDetail();
+  }, []);
 
   return (
-    <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary shadow ">
+    <Navbar
+      collapseOnSelect
+      expand="lg"
+      className="bg-body-tertiary shadow "
+      style={{ position: "sticky", zIndex: 1001, height: "auto", top: "0" }}
+    >
       <div
         className="d-flex flex-row align-items-center"
         style={{ margin: "0 3%", width: "100%" }}
       >
-        <Link className="navbar-brand" to="/employee">
+        <Link className="navbar-brand d-flex align-items-center" to="/employee">
           <img
             src={logo}
             alt="logo.png"
             style={{ maxWidth: "40px" }}
             className="me-2"
           />
-          HR Management Syste
+          <h4
+            style={{
+              fontWeight: "500",
+              lineHeight: "1.375",
+              fontSize: "24px",
+              margin: "0",
+            }}
+          >
+            HR Management Syste
+          </h4>
         </Link>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto"></Nav>
           <Nav>
             <Dropdown menu={{ items }} trigger={["click"]}>
-              <a onClick={(e) => e.preventDefault()}>
+              <span>
                 <Space>
                   <img
                     className="rounded-circle"
@@ -127,7 +144,7 @@ function Header() {
                     style={{ maxWidth: "40px", cursor: "pointer" }}
                   />
                 </Space>
-              </a>
+              </span>
             </Dropdown>
           </Nav>
         </Navbar.Collapse>
@@ -155,6 +172,7 @@ function Header() {
                 onClick={() => {
                   handleClose();
                   handleSignOut();
+                  dispatch(clearUserStore({}));
                 }}
               >
                 Yes

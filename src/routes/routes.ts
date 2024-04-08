@@ -2,11 +2,18 @@ import LoginPage from "@/src/pages/auth/login/LoginPage";
 import ForgotPage from "@/src/pages/auth/forgot/ForgotPage";
 import ErrorPage from "@/src/pages/error/ErrorPage";
 import EmployeePage from "@/src/pages/employee/EmployeePage";
-import Header from "@/src/layout/header/Header";
 import ChangePasswordPage from "@/src/pages/auth/changePassword/ChangePasswordPage";
+import DefaultLayout from "@/src/layout/defaultLayout/DefaultLayout";
+import ResetPasswordPage from "@/src/pages/auth/resetPassword/ResetPasswordPage";
 
 export const privateRoutes = [
-  { path: "/employee", component: EmployeePage, layout: Header },
+  { path: "/", component: EmployeePage },
+  { path: "/employee", component: EmployeePage, layout: DefaultLayout },
+  {
+    path: "/settings/change-password",
+    component: ResetPasswordPage,
+    layout: DefaultLayout,
+  },
 ];
 export const publicRoutes = [
   { path: "auth/sign-in", component: LoginPage, layout: null },

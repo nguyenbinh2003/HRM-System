@@ -6,8 +6,12 @@ class UserServices extends BaseServices {
   constructor() {
     super(URL, {});
   }
-  detail() {
+  getUserDetail() {
     return this.get("/user/detail", {});
+  }
+
+  getEmployee(page?: number, search?: string) {
+    return this.get(`/employee?page=${page}&search=${search}`, {});
   }
 }
 

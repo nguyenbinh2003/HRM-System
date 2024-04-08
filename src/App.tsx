@@ -6,18 +6,21 @@ import "./App.css";
 import PrivateRouter from "./routes/privateRoute/PrivateRoute";
 import PublicRouter from "./routes/publicRoute/PublicRoute";
 import { privateRoutes, publicRoutes } from "./routes/routes";
+import DefaultLayout from "./layout/defaultLayout/DefaultLayout";
 
 function App() {
   return (
     <BrowserRouter>
-      <div style={{ minHeight: "100vh" }}>
+      <>
         <Routes>
           <Route element={<PrivateRouter />}>
             {privateRoutes.map((route, index) => {
               const Page = route.component;
-              let Layout: any = Fragment;
+              let Layout: any = DefaultLayout;
               if (route.layout) {
                 Layout = route.layout;
+              } else if (route.layout === null) {
+                Layout = Fragment;
               }
               return (
                 <Route
@@ -35,11 +38,27 @@ function App() {
           <Route element={<PublicRouter />}>
             {publicRoutes.map((route, index) => {
               const Page = route.component;
-              return <Route key={index} element={<Page />} path={route.path} />;
+              let Layout: any = DefaultLayout;
+              if (route.layout) {
+                Layout = route.layout;
+              } else if (route.layout === null) {
+                Layout = Fragment;
+              }
+              return (
+                <Route
+                  key={index}
+                  element={
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  }
+                  path={route.path}
+                />
+              );
             })}
           </Route>
         </Routes>
-      </div>
+      </>
       <ToastContainer />
     </BrowserRouter>
   );

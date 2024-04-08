@@ -9,9 +9,13 @@ export const userSlice = createSlice({
     addUserStore: (state, action) => {
       return (state = action.payload);
     },
+
+    clearUserStore: (state, action) => {
+      return (state = action.payload);
+    },
   },
 });
 
-export const { addUserStore } = userSlice.actions;
+export const { addUserStore, clearUserStore } = userSlice.actions;
 
 export default userSlice.reducer;

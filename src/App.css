@@ -1,9 +1,12 @@
-@import url(https://db.onlinewebfonts.com/c/bab845ed46b9ada0916b126689b6d069?family=Sofia+Pro+Viet);
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 
 #root {
+  display: flex;
+  flex-direction: column;
   min-width: 100vw;
   min-height: 100vh;
-  font-family: "Sofia Pro Viet";
+  font-family: "SVN-Sofia Pro Regular", "Public Sans", sans-serif;
 }
 
 .logo {
@@ -45,3 +48,8 @@
 .modal-sm {
   --bs-modal-width: 400px !important;
 }
+
+.Toastify__close-button {
+  margin-top: 12px !important;
+}
+

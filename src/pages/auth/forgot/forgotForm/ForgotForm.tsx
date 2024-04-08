@@ -1,22 +1,41 @@
 import { Field, Form, Formik } from "formik";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { BiError } from "react-icons/bi";
+import { toast } from "react-toastify";
 
 import { forgotSchema } from "@/src/utils/formSchema";
 import AuthService from "@/src/services/auth/authServices";
-import { toast } from "react-toastify";
+import checkCircle from "@/src/assets/check-circle.png";
+import { MoonLoader } from "react-spinners";
+import { useState } from "react";
 
 const AuthServices = new AuthService();
 
 export default function ForgotForm() {
+  const [isSendEmail, setIsSendEmail] = useState<boolean>(false);
+
   const handleSubmit = async (data: object) => {
+    setIsSendEmail(true);
     const forgot = await AuthServices.forgotPassword(data);
     console.log(forgot);
     if (forgot.status < 400) {
-      toast.success("We have sent you the OTP code, please check your email.");
-      return;
+      toast.success("We have sent you the OTP code, please check your email.", {
+        icon: () => <img src={checkCircle} alt="" />,
+        style: { background: "#D9F3EE", color: "#12A594", fontSize: "13px" },
+        hideProgressBar: true,
+      });
     }
-    toast.error("Please try again with an valid email address.");
+    toast.error("Please try again with an valid email address.", {
+      icon: () => <BiError size={20} />,
+      style: {
+        background: "#FFEFEF",
+        color: "#E5484D",
+        fontSize: "13px",
+      },
+      hideProgressBar: true,
+    });
+    setIsSendEmail(false);
     return;
   };
 
@@ -58,11 +77,20 @@ export default function ForgotForm() {
           </div>
           <div className="mt-3 d-flex align-items-center flex-column">
             <Button
+              className="d-flex justify-content-center align-items-center"
               variant="primary"
-              type="submit"
-              style={{ width: "100%", height: "48px" }}
+              type={isSendEmail ? "button" : "submit"}
+              style={{
+                width: "100%",
+                height: "48px",
+                cursor: isSendEmail ? "no-drop" : "pointer",
+              }}
             >
-              Confirm & Send OTP
+              {isSendEmail ? (
+                <MoonLoader color="#FBFDFF" size={20} />
+              ) : (
+                "Sign In"
+              )}
             </Button>
             <Link className="mt-3" to={"/auth/sign-in"}>
               Back To Sign In

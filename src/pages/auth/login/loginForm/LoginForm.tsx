@@ -4,26 +4,46 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { BiError } from "react-icons/bi";
+import { toast } from "react-toastify";
 
 import { loginSchema } from "@/src/utils/formSchema";
 import AuthService from "@/src/services/auth/authServices";
-import { toast } from "react-toastify";
+import checkCircle from "@/src/assets/check-circle.png";
+import { MoonLoader } from "react-spinners";
 
 const AuthServices = new AuthService();
 
 export default function LoginForm() {
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
+  const [isSignIn, setIsSignIn] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const handleSubmit = async (data: object) => {
+    setIsSignIn(true);
     const login = await AuthServices.login(data);
     if (login.status < 400) {
       localStorage.setItem("user-token", login.data.data.token);
+      toast.success("Sign in successfully.", {
+        icon: () => <img src={checkCircle} alt="" />,
+        style: { background: "#D9F3EE", color: "#12A594", fontSize: "13px" },
+        hideProgressBar: true,
+      });
       navigate("/employee");
-      toast.success("Signed in successfully.");
-      return;
     } else {
-      toast.error("Incorrect Username, Password or Factory. Please try again!");
+      toast.error(
+        "Incorrect Username, Password or Factory. Please try again!",
+        {
+          icon: () => <BiError size={20} />,
+          style: {
+            background: "#FFEFEF",
+            color: "#E5484D",
+            fontSize: "13px",
+          },
+          hideProgressBar: true,
+        }
+      );
+      setIsSignIn(false);
       return;
     }
   };
@@ -140,12 +160,18 @@ export default function LoginForm() {
           </div>
           <div className="mt-3 d-flex align-items-center flex-column">
             <Button
+              className="d-flex justify-content-center align-items-center"
               variant="primary"
-              type="submit"
-              style={{ width: "100%", height: "48px" }}
+              type={isSignIn ? "button" : "submit"}
+              style={{
+                width: "100%",
+                height: "48px",
+                cursor: isSignIn ? "no-drop" : "pointer",
+              }}
             >
-              Sign In
+              {isSignIn ? <MoonLoader color="#FBFDFF" size={20} /> : "Sign In"}
             </Button>
+
             <Link className="mt-3" to={"/auth/forgot-password"}>
               Forgot Your Password ?
             </Link>

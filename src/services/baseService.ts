@@ -22,9 +22,9 @@ class BaseServices {
             case 400:
               return response;
             case 401:
-              // localStorage.clear();
-              // window.location.reload();
-              return response;
+              localStorage.clear();
+              window.location.reload();
+              return;
             case 403:
               // window.location.href = "/error";
               return response;
@@ -45,7 +45,7 @@ class BaseServices {
     const userToken = localStorage.getItem("user-token");
     const config = {
       headers: {
-        Authorization: userToken,
+        Authorization: `Bearer ${userToken}`,
       },
       ...this.configHeaders,
     };
