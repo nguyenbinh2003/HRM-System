@@ -1,13 +1,13 @@
 import { Field, Form, Formik } from "formik";
-import { Button } from "react-bootstrap";
+import { Button } from "@mui/material";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 import { changePasswordSchema } from "@/src/utils/formSchema";
-import AuthService from "@/src/services/auth/authServices";
-import { toast } from "react-toastify";
+// import AuthService from "@/src/services/auth/authServices";
+// import { toast } from "react-toastify";
 import { useState } from "react";
 
-export default function ChangePasswordForm() {
+export default function ResetPasswordForm() {
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
 
   return (
@@ -22,15 +22,12 @@ export default function ChangePasswordForm() {
       }}
     >
       {({ values, errors, touched }) => (
-        <Form
-          style={{ minWidth: "23rem", background: "rgb(255, 255, 255)" }}
-          className="p-3 border border-light rounded shadow-sm"
-        >
+        <Form className="border-0">
           <div>
             <label htmlFor="password" className="form-label">
               Password
             </label>
-            <div style={{ position: "relative" }}>
+            <div style={{ position: "relative", minHeight: "48px" }}>
               <Field
                 className={
                   errors.password && touched.password
@@ -43,6 +40,9 @@ export default function ChangePasswordForm() {
                 placeholder="Password"
                 validateOnBlur
                 validateOnChange={false}
+                style={{
+                  height: "48px",
+                }}
               />
               {!!values.password ? (
                 <button
@@ -88,6 +88,9 @@ export default function ChangePasswordForm() {
               placeholder="Confirm Password"
               validateOnBlur
               validateOnChange={false}
+              style={{
+                height: "48px",
+              }}
             />
             {errors.password_confirmation && touched.password_confirmation ? (
               <div className="invalid-feedback">
@@ -97,13 +100,27 @@ export default function ChangePasswordForm() {
               ""
             )}
           </div>
-          <div className="mt-3 d-flex align-items-center flex-column">
+          <div className="d-flex flex-column" style={{ margin: "8px 0" }}>
             <Button
-              variant="primary"
               type="submit"
-              style={{ width: "100%", height: "45px" }}
+              variant="contained"
+              sx={{
+                width: "100%",
+                height: "48px",
+                margin: "18px 0 0",
+                textTransform: "capitalize",
+                fontSize: "16px",
+                color: "rgb(251, 253, 255)",
+                fontFamily:
+                  '"SVN-Sofia Pro Regular", "Public Sans", sans-serif',
+                fontWeight: 400,
+                lineHeight: 1.71429,
+                backgroundColor: "rgb(0, 145, 255)",
+                boxShadow: "none",
+                borderRadius: "6px",
+              }}
             >
-              Save Changes
+              Confirm
             </Button>
           </div>
         </Form>

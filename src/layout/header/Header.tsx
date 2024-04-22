@@ -6,6 +6,8 @@ import { Dropdown, MenuProps, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames/bind";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { BiError } from "react-icons/bi";
 
 import styles from "./Header.module.scss";
 import logo from "@/src/assets/Rectangle 4.png";
@@ -19,15 +21,30 @@ const cx = classNames.bind(styles);
 
 function Header() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isShow, setIsShow] = useState<boolean>(false);
   const user = useAppSelector((state) => state.user);
 
   const handleClose = () => setIsShow(false);
   const handleShow = () => setIsShow(true);
 
-  const handleSignOut = () => {
-    localStorage.clear();
-    navigate("/auth/sign-in");
+  const handleSignOut = async () => {
+    const logout = await UserService.userLogout();
+    if (logout.status < 400) {
+      localStorage.clear();
+      navigate("/auth/sign-in");
+    } else {
+      toast.error("Sign out fail.", {
+        icon: () => <BiError size={20} />,
+        style: {
+          background: "#FFEFEF",
+          color: "#E5484D",
+          fontSize: "13px",
+        },
+        hideProgressBar: true,
+      });
+    }
+    return;
   };
 
   const items: MenuProps["items"] = [
@@ -44,7 +61,7 @@ function Header() {
               alt="avatar.png"
               style={{ maxWidth: "40px" }}
             />
-            <h4>admin_test1</h4>
+            <h4>{user.data?.username ? user.data.username : "admin_test1"}</h4>
           </div>
           <p
             className="d-flex justify-content-center rounded-pill mt-1"
@@ -87,13 +104,12 @@ function Header() {
       key: "3",
     },
   ];
-  const dispatch = useAppDispatch();
 
   const handleGetUserDetail = async () => {
     const user = await UserService.getUserDetail();
 
-    dispatch(addUserStore(user.data));
     if (user.status < 400) {
+      dispatch(addUserStore(user.data));
     }
   };
 

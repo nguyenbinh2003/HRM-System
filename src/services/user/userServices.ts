@@ -10,8 +10,8 @@ class UserServices extends BaseServices {
     return this.get("/user/detail", {});
   }
 
-  getEmployee(page?: number, search?: string) {
-    return this.get(`/employee?page=${page}&search=${search}`, {});
+  userLogout() {
+    return this.post("/logout", {});
   }
 }
 

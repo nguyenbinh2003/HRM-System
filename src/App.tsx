@@ -15,7 +15,7 @@ function App() {
         <Routes>
           <Route element={<PrivateRouter />}>
             {privateRoutes.map((route, index) => {
-              const Page = route.component;
+              const Page: any = route.component;
               let Layout: any = DefaultLayout;
               if (route.layout) {
                 Layout = route.layout;

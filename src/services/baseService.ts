@@ -66,7 +66,7 @@ class BaseServices {
   get(url: string, configHeaders: any) {
     return this.http.get(url, { ...this.setConfigHeaders(), ...configHeaders });
   }
-  post(url: string, data: any, configHeaders: any) {
+  post(url: string, data: any, configHeaders?: any) {
     return this.http.post(url, data, {
       ...this.setConfigHeaders(),
       ...configHeaders,
@@ -102,8 +102,9 @@ class BaseServices {
     });
   }
 
-  delete(url: string, configHeaders?: object): Promise<any> {
+  delete(url: string, data: any, configHeaders?: object): Promise<any> {
     return this.http.delete(url, {
+      data,
       ...this.setConfigHeaders(),
       ...configHeaders,
     });

@@ -11,6 +11,9 @@ export const configStyleDataGird = {
     backgroundColor: "rgb(236, 238, 240)",
     border: "1px solid white",
   },
+  "& .MuiDataGrid-row": {
+    backgroundColor: "rgb(248 249 250)",
+  },
   "& .MuiDataGrid-row:hover": {
     backgroundColor: "rgb(237, 246, 255)",
   },
@@ -22,9 +25,6 @@ export const configStyleDataGird = {
   },
   "& .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked": {
     color: "rgb(48, 164, 108)",
-  },
-  "& .MuiDataGrid-row.Mui-selected": {
-    backgroundColor: "rgb(233, 249, 238)",
   },
   "& ::-webkit-scrollbar": {
     width: "10px",
@@ -52,14 +52,16 @@ export const configStyleDataGird = {
     fontSize: "12px",
     fontFamily: `"SVN-Sofia Pro Regular", "Public Sans", sans-serif`,
     fontWeight: 400,
-    textTransform: "uppercase",
+    textTransform: "capitalize",
     border: "1px solid white",
+    // background: "rgb(248 249 250)",
   },
   "& .MuiSvgIcon-fontSizeMedium": {
     fontSize: "1.25rem",
   },
   "& .MuiDataGrid-virtualScroller": {
     maxHeight: "525px",
+    minHeight: "525px",
     scrollBehavior: "smooth",
   },
   "& .css-levciy-MuiTablePagination-displayedRows": {
@@ -74,7 +76,7 @@ export const configStyleDataGird = {
   },
   "& .MuiDivider-root": {
     margin: "10px 0px",
-    border: "1px solid rgb(175 180 181)",
+    border: "1px solid rgb(103 147 162)",
   },
   "& .MuiDataGrid-toolbarContainer": {
     justifyContent: "end",
@@ -97,6 +99,7 @@ export const configStyleDataGird = {
     minWidth: "48px",
     height: "35px",
     borderRadius: "6px",
+    margin: "0 3px",
   },
   "& .MuiTypography-h6": {
     margin: "30px 0px 0px",
@@ -116,11 +119,14 @@ export const configStyleDataGird = {
     textAlign: "center",
     color: "rgb(104, 112, 118)",
   },
+  "& .MuiTablePagination-actions": {
+    marginLeft: "0",
+  },
 };
 
 export const columnsDataGird: GridColDef[] = [
   {
-    field: "id",
+    field: "staff_id",
     headerName: "NIK",
     disableColumnMenu: true,
     sortable: false,

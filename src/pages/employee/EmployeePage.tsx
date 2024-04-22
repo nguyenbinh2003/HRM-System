@@ -1,12 +1,20 @@
 import classNames from "classnames/bind";
-import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import { DataGrid, GridRowSelectionModel } from "@mui/x-data-grid";
+import { Link, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  DataGrid,
+  GridCallbackDetails,
+  GridEventListener,
+  GridRowParams,
+  GridRowSelectionModel,
+  MuiEvent,
+} from "@mui/x-data-grid";
 import { Paper } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 
 import styles from "./EmployeePage.module.scss";
 import { IconSearch } from "@/src/components/icons/icons";
-import UserServices from "@/src/services/user/userServices";
+import EmployeeServices from "@/src/services/employee/employeeServices";
 import {
   configStyleDataGird,
   columnsDataGird,
@@ -14,33 +22,43 @@ import {
 import CustomToolbar from "./customToolBar/CustomToolbar";
 import CustomPagination from "./customPagination/CustomPagination";
 import CustomNoRowsOverlay from "./customNoRowsOverlay/CustomNoRowsOverlay";
+import ModalDelete from "./modalDelete/ModalDelete";
 
 const cx = classNames.bind(styles);
-const UserService = new UserServices();
+const EmployeeService = new EmployeeServices();
 
 export default function EmployeePage() {
+  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [params, setParams] = useSearchParams();
   const [isFocus, setIsfocus] = useState<boolean>(false);
-  const [valueSearch, setValueSearch] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 0,
+    page: Number(params.get("page")) === null ? 0 : Number(params.get("page")),
     pageSize: 20,
   });
   const [employee, setEmployee] = useState({
     data: [],
     total: 0,
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rowSelectionModel, setRowSelectionModel] =
     useState<GridRowSelectionModel>([]);
+  const [isShowModalDelete, setIsShowModalDelete] = useState<boolean>(false);
+
+  const handleOpen = () => setIsShowModalDelete(true);
+  const handleClose = () => setIsShowModalDelete(false);
 
   const handleGetEmployee = async (page?: number, search?: string) => {
     setIsLoading(true);
-    const employee = await UserService.getEmployee(page, search);
+
+    const employee = await EmployeeService.getEmployee(page, search);
     if (employee.data.data?.data) {
       const employeeObjs = employee.data.data?.data.map((data: any) => {
         return {
-          id: data.staff_id || "",
+          id: data.id || "",
+          staff_id: data.staff_id || "",
           name: data.name || "",
           gender:
             data.gender === 0 ? "Male" : data.gender === 1 ? "Female" : "",
@@ -71,94 +89,131 @@ export default function EmployeePage() {
         total: 0,
       });
     }
+
     setIsLoading(false);
     return;
   };
 
-  const handleOnChange = (e: any) => {
-    setTimeout(() => {
-      setValueSearch(e.target.value);
-    }, 1000);
-  };
+  const handleOnChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
 
-  
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = setTimeout(() => {
+        setParams({ page: String(paginationModel.page), search: value });
+      }, 1000);
+    },
+    []
+  );
+
+  const handleDoubleClickRow: GridEventListener<"rowDoubleClick"> = (
+    params: GridRowParams
+  ) => {
+    navigate(`/employee/create-or-update/${params.id}`);
+  };
   useEffect(() => {
-    handleGetEmployee(paginationModel.page + 1, valueSearch);
-  }, [paginationModel.page, valueSearch]);
+    setParams({
+      page: String(params.get("page") === null ? 1 : paginationModel.page + 1),
+      search: String(params.get("search") || ""),
+    });
+    handleGetEmployee(paginationModel.page + 1, String(params.get("search")));
+  }, [paginationModel.page, params.get("search")]);
 
   return (
-    <div
-      className={cx("employee-page", "d-flex flex-column")}
-      style={{ overflowY: "hidden" }}
-    >
-      <div className={cx("css-u5ngd")}>
-        <nav className={cx("header")} aria-label="breadcrumb">
-          <ol className={cx("parent-item")}>
-            <li className={cx("item")}>
-              <Link to="/employee" style={{ pointerEvents: "none" }}>
-                General
-              </Link>
-            </li>
-            <li aria-hidden="true" className={cx("css-3mf706")}>
-              ›
-            </li>
-            <li className={cx("item")}>
-              <p className="">Employee Management</p>
-            </li>
-          </ol>
-        </nav>
-        <div className={cx("css-17jua99")}>
-          <h3>Employee Management</h3>
-          <div
-            className={cx("input-group", "rounded", isFocus ? "focused" : "")}
-          >
-            <IconSearch width={25} height={25} />
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Search..."
-              onChange={(e) => handleOnChange(e)}
-              onFocus={() => setIsfocus(true)}
-              onBlur={() => setIsfocus(false)}
-            />
+    <>
+      <div
+        className={cx("employee-page", "d-flex flex-column")}
+        style={{ overflowY: "hidden" }}
+      >
+        <div className={cx("css-u5ngd")}>
+          <nav className={cx("header")} aria-label="breadcrumb">
+            <ol className={cx("parent-item")}>
+              <li className={cx("item")}>
+                <Link to="/employee" style={{ pointerEvents: "none" }}>
+                  General
+                </Link>
+              </li>
+              <li aria-hidden="true" className={cx("css-3mf706")}>
+                ›
+              </li>
+              <li className={cx("item")}>
+                <p className="">Employee Management</p>
+              </li>
+            </ol>
+          </nav>
+          <div className={cx("css-17jua99")}>
+            <h3>Employee Management</h3>
+            <div
+              className={cx("input-group", "rounded", isFocus ? "focused" : "")}
+            >
+              <IconSearch width={25} height={25} />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search..."
+                defaultValue={String(params.get("search") || "")}
+                onChange={(e) => handleOnChange(e)}
+                onFocus={() => setIsfocus(true)}
+                onBlur={() => setIsfocus(false)}
+              />
+            </div>
           </div>
-        </div>
 
-        <Paper elevation={0} style={{ marginBottom: "10%" }}>
-          <DataGrid
-            style={{
-              padding: "10px",
-              border: 0,
-              height: employee.data.length === 0 ? "680px" : "",
-            }}
-            pagination
-            paginationMode="server"
-            paginationModel={paginationModel}
-            onPaginationModelChange={setPaginationModel}
-            onRowSelectionModelChange={(newRowSelectionModel) => {
-              setRowSelectionModel(newRowSelectionModel);
-            }}
-            rowSelectionModel={rowSelectionModel}
-            keepNonExistentRowsSelected
-            slots={{
-              toolbar: CustomToolbar,
-              pagination: CustomPagination,
-              noRowsOverlay: CustomNoRowsOverlay,
-            }}
-            rows={employee?.data || []}
-            rowCount={employee?.total}
-            columns={columnsDataGird}
-            initialState={{}}
-            pageSizeOptions={[5]}
-            checkboxSelection
-            rowHeight={40}
-            columnHeaderHeight={45}
-            density="compact"
-            loading={isLoading}
-            sx={configStyleDataGird}
-          />
-        </Paper>
+          <Paper elevation={0} style={{ marginBottom: "10%" }}>
+            <DataGrid
+              style={{
+                padding: "10px",
+                border: 0,
+                height: employee.data.length === 0 ? "680px" : "",
+              }}
+              pagination
+              paginationMode="server"
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
+              rowSelectionModel={rowSelectionModel}
+              onRowSelectionModelChange={(newRowSelectionModel) => {
+                if (newRowSelectionModel.length === 0) {
+                  setIsDisabled(true);
+                } else {
+                  setIsDisabled(false);
+                }
+                setRowSelectionModel(newRowSelectionModel);
+              }}
+              keepNonExistentRowsSelected
+              slots={{
+                toolbar: () => (
+                  <CustomToolbar
+                    isDisabled={isDisabled}
+                    handleOnShow={handleOpen}
+                  />
+                ),
+                pagination: CustomPagination,
+                noRowsOverlay: CustomNoRowsOverlay,
+              }}
+              rows={employee?.data || []}
+              rowCount={employee?.total}
+              onRowDoubleClick={handleDoubleClickRow}
+              columns={columnsDataGird}
+              checkboxSelection
+              rowHeight={40}
+              columnHeaderHeight={45}
+              density="compact"
+              loading={isLoading}
+              sx={configStyleDataGird}
+            />
+          </Paper>
+        </div>
       </div>
-    </div>
+      <ModalDelete
+        isShow={isShowModalDelete}
+        rowSelectionModel={rowSelectionModel}
+        handleGetEmployee={handleGetEmployee}
+        handleClose={handleClose}
+        setShow={setIsShowModalDelete}
+      />
+    </>
   );
 }
