@@ -56,6 +56,7 @@ const requiredFields = [
   "gender",
   "dob",
   "ktp_no",
+  "nc_id",
   "contract_start_date",
   "type",
   "safety_insurance",
