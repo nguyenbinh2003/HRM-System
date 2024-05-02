@@ -10,7 +10,7 @@ import {
 import { Paper } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
-import styles from "./EmployeePage.module.scss";
+import styles from "./EmployeeHomePage.module.scss";
 import { IconSearch } from "@/src/components/icons/icons";
 import EmployeeServices from "@/src/services/employee/employeeServices";
 import {
