@@ -7,11 +7,13 @@ import { MoonLoader } from "react-spinners";
 import styles from "./CreateOrUpdatePage.module.scss";
 import FormEmployee from "../components/formEmployee/FormEmployee";
 import EmployeeServices from "@/src/services/employee/employeeServices";
+import { IEmployeeData } from "@/src/interfaces/formInterfaces";
+import { AxiosResponse } from "axios";
 
 const cx = classNames.bind(styles);
 const EmployeeService = new EmployeeServices();
 
-const initialValuesDefault = {
+const initialValuesDefault: IEmployeeData = {
   name: "",
   gender: "",
   dob: "",
@@ -53,24 +55,32 @@ const initialValuesDefault = {
   emergency_name: "",
   emergency_relationship: "",
   emergency_contract: "",
+  deleted_ids: [],
+  documents: [],
 };
 
 const handleGetEmployeeDetail = async (
   id: number,
   setInitialValues: SetStateAction<any>
 ) => {
-  const employee = await EmployeeService.getEmployeeDetail(id);
+  const employee: AxiosResponse<any> = await EmployeeService.getEmployeeDetail(
+    id
+  );
 
   if (employee.status < 400) {
-    const arrIntial = Object.keys(initialValuesDefault);
-
-    const newData = Object.fromEntries(
-      Object.entries(employee.data.data).filter(([key, value]) =>
-        arrIntial.includes(key)
-      )
+    const arrIntialKeys: string[] = Object.keys(initialValuesDefault);
+    const benefits: number[] = employee.data.data.benefits?.map(
+      (item: any) => item.id
     );
 
-    const mapItemIsNull = [newData].map((item: any) => {
+    const newData: { [k: string]: unknown } = Object.fromEntries(
+      Object.entries(employee.data.data).filter(([key, _]) =>
+        arrIntialKeys.includes(key)
+      )
+    );
+    newData.benefits = benefits;
+    newData.deleted_ids = [];
+    const mapItemIsNull: any = [newData].map((item: any) => {
       const filteredObj: any = {};
       Object.entries(item).forEach(([key, value]) => {
         filteredObj[key] = value === null ? "" : value;
@@ -78,7 +88,6 @@ const handleGetEmployeeDetail = async (
       return filteredObj;
     });
 
-    console.log("🚀 ~ mapItemIsNull ~ mapItemIsNull:", ...mapItemIsNull);
     setInitialValues(...mapItemIsNull);
   }
 
@@ -87,8 +96,10 @@ const handleGetEmployeeDetail = async (
 
 const CreateOrUpdatePage = () => {
   const formikRef: any = useRef(null);
-  const { idEmployee } = useParams();
-  const [initialValues, setInitialValues] = useState<object>({});
+  const { idEmployee } = useParams<string>();
+  const [initialValues, setInitialValues] = useState<IEmployeeData | object>(
+    {}
+  );
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitButton, setIsSubmitButton] = useState<boolean>(true);

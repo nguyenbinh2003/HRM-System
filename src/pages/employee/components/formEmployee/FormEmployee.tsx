@@ -26,6 +26,15 @@ import MarriageServices from "@/src/services/marriage/marriageServices";
 import PositionServices from "@/src/services/position/positionServices";
 import FormOthers from "./formOthers/FormOthers";
 import checkCircle from "@/src/assets/check-circle.png";
+import {
+  IBenefitList,
+  IDepartmentList,
+  IEmployeeData,
+  IGradeList,
+  IMarriageList,
+  IPositionList,
+} from "@/src/interfaces/formInterfaces";
+import { AxiosResponse } from "axios";
 
 const MarriageService = new MarriageServices();
 const GradeService = new GradeServices();
@@ -64,25 +73,30 @@ const handleCheckField = (
   const checkRequiredFields =
     Object.keys(errors).length === 0 &&
     Object.entries(values)
-      .filter(([key, value]) => {
+      .filter(([key, _]) => {
         return requiredFields.includes(key);
       })
-      .every(([key, value]) => {
+      .every(([_, value]) => {
         return value === 0 ? true : !!value;
       });
-
   return checkRequiredFields;
 };
 
 const handleAddNewEmployee = async (
-  values: object,
+  values: any,
   navigate: NavigateFunction,
   setIsSubmitting: React.SetStateAction<any>
 ) => {
+  const { documents, deleted_ids, ...data } = values;
   setIsSubmitting(true);
-  const add = await EmployeeService.addNewEmployee(values);
+  const add = await EmployeeService.addNewEmployee(data);
 
   if (add.status < 400) {
+    await EmployeeService.uploadEmployeeDocs({
+      employee_id: add.data.data.id,
+      documents,
+      deleted_ids,
+    });
     navigate("/employee");
     toast.success("Record added", {
       icon: () => <img src={checkCircle} alt="" />,
@@ -107,14 +121,21 @@ const handleAddNewEmployee = async (
 
 const handleUpdateEmployee = async (
   id: number,
-  data: object,
+  values: any,
   navigate: NavigateFunction,
   setIsSubmitting: React.SetStateAction<any>
 ) => {
+  const { documents, deleted_ids, ...data } = values;
+
   setIsSubmitting(true);
   const update = await EmployeeService.updateEmployee(id, data);
 
   if (update.status < 400) {
+    await EmployeeService.uploadEmployeeDocs({
+      employee_id: id,
+      documents,
+      deleted_ids,
+    });
     navigate("/employee");
     toast.success("Change saved", {
       icon: () => <img src={checkCircle} alt="" />,
@@ -143,21 +164,31 @@ export default function FormEmployee({
   initialValues,
 }: {
   formikRef: any;
-  initialValues: object;
+  initialValues: IEmployeeData | object;
   setIsSubmitting: React.SetStateAction<any>;
   setIsSubmitButton: React.SetStateAction<any>;
 }) {
-  const [value, setValue] = React.useState(0);
-  const [marriageList, setMarriageList] = React.useState([]);
-  const [positionList, setPositionList] = React.useState([]);
-  const [gradeList, setGradeList] = React.useState([]);
-  const [benefitList, setBenefitList] = React.useState([]);
-  const [departmentList, setDepartmentList] = React.useState([]);
-  const navigate: NavigateFunction = useNavigate();
   const { idEmployee } = useParams();
+  const navigate: NavigateFunction = useNavigate();
+  const [activeTab, setActiveTab] = React.useState<number>(0);
+  const [isErrorTabEmployeeInformation, setIsErrorTabEmployeeInformation] =
+    React.useState(false);
+  const [isErrorTabContractInformation, setIsErrorTabContractInformation] =
+    React.useState(false);
+  const [isErrorTabSalaryAndWages, setIsErrorTabSalaryAndWages] =
+    React.useState(false);
+
+  const [marriageList, setMarriageList] = React.useState<IMarriageList[]>([]);
+  const [positionList, setPositionList] = React.useState<IPositionList[]>([]);
+  const [gradeList, setGradeList] = React.useState<IGradeList[]>([]);
+  const [benefitList, setBenefitList] = React.useState<IBenefitList[]>([]);
+  const [departmentList, setDepartmentList] = React.useState<IDepartmentList[]>(
+    []
+  );
 
   const handleGetMarriage = async () => {
-    const marriageList = await MarriageService.getMarriage();
+    const marriageList: AxiosResponse<any> =
+      await MarriageService.getMarriage();
 
     if (marriageList.status < 400) {
       const marriageItems = marriageList?.data?.data.map((item: any) => {
@@ -171,7 +202,8 @@ export default function FormEmployee({
     return;
   };
   const handleGetPosition = async () => {
-    const positionList = await PositionService.getPosition();
+    const positionList: AxiosResponse<any> =
+      await PositionService.getPosition();
 
     if (positionList.status < 400) {
       const positionItems = positionList?.data?.data.map((item: any) => {
@@ -185,7 +217,8 @@ export default function FormEmployee({
     return;
   };
   const handleGetDepartment = async () => {
-    const departmentList = await DepartmentService.getDepartment();
+    const departmentList: AxiosResponse<any> =
+      await DepartmentService.getDepartment();
 
     if (departmentList.status < 400) {
       const departmentItems = departmentList?.data?.data.map((item: any) => {
@@ -199,7 +232,7 @@ export default function FormEmployee({
     return;
   };
   const handleGetGrade = async () => {
-    const gradeList = await GradeService.getGrade();
+    const gradeList: AxiosResponse<any> = await GradeService.getGrade();
 
     if (gradeList.status < 400) {
       const gradeItems = gradeList?.data?.data.map((item: any) => {
@@ -213,7 +246,7 @@ export default function FormEmployee({
     return;
   };
   const handleGetBenefit = async () => {
-    const benefitList = await BenefitService.getBenefit();
+    const benefitList: AxiosResponse<any> = await BenefitService.getBenefit();
 
     if (benefitList.status < 400) {
       const benefitItems = benefitList?.data?.data.map((item: any) => {
@@ -227,8 +260,52 @@ export default function FormEmployee({
     return;
   };
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const handleChangeTab = (newValue: number, values: IEmployeeData) => {
+    const previousTab: number = activeTab;
+    setActiveTab(newValue);
+
+    switch (previousTab) {
+      case 0:
+        if (
+          values.name === "" ||
+          values.dob === "" ||
+          values.gender === "" ||
+          values.gender === null ||
+          values.ktp_no === "" ||
+          values.nc_id === ""
+        ) {
+          setIsErrorTabEmployeeInformation(true);
+        } else {
+          setIsErrorTabEmployeeInformation(false);
+        }
+        break;
+      case 1:
+        if (
+          values.type === "" ||
+          values.type === null ||
+          values.contract_start_date === ""
+        )
+          setIsErrorTabContractInformation(true);
+        else {
+          setIsErrorTabContractInformation(false);
+        }
+        break;
+      case 3:
+        if (
+          values.basic_salary === "" ||
+          values.audit_salary === "" ||
+          values.safety_insurance === "" ||
+          values.health_insurance === "" ||
+          values.meal_allowance === ""
+        )
+          setIsErrorTabSalaryAndWages(true);
+        else {
+          setIsErrorTabSalaryAndWages(false);
+        }
+        break;
+      default:
+        break;
+    }
   };
   React.useEffect(() => {
     handleGetBenefit();
@@ -243,22 +320,28 @@ export default function FormEmployee({
       innerRef={formikRef}
       initialValues={initialValues}
       validationSchema={employeeSchema}
+      validateOnChange={false}
       onSubmit={(values: any) => {
-        console.log(values);
-        !!idEmployee
-          ? handleUpdateEmployee(
-              Number(idEmployee),
-              values,
-              navigate,
-              setIsSubmitting
-            )
-          : handleAddNewEmployee(values, navigate, setIsSubmitting);
+        if (!!idEmployee) {
+          handleUpdateEmployee(
+            Number(idEmployee),
+            values,
+            navigate,
+            setIsSubmitting
+          );
+        } else {
+          handleAddNewEmployee(values, navigate, setIsSubmitting);
+        }
         return;
       }}
     >
       {({ values, errors, touched }) => {
         React.useEffect(() => {
-          const isCheck = handleCheckField(requiredFields, values, errors);
+          const isCheck: boolean = handleCheckField(
+            requiredFields,
+            values,
+            errors
+          );
           setIsSubmitButton(!isCheck);
         }, [values, errors]);
 
@@ -391,103 +474,61 @@ export default function FormEmployee({
           >
             <Box>
               <Tabs
-                value={value}
-                onChange={handleChange}
+                value={activeTab}
+                onChange={(_, newValue) => handleChangeTab(newValue, values)}
                 aria-label="add new employee tabs"
                 sx={{
                   "& .MuiButtonBase-root.MuiTab-root.MuiTab-textColorPrimary.Mui-selected.tab_1":
                     {
-                      backgroundColor:
-                        errors.name ||
-                        errors.dob ||
-                        errors.gender ||
-                        errors.ktp_no
-                          ? "rgb(229, 72, 77)"
-                          : "",
-                      color:
-                        errors.name ||
-                        errors.dob ||
-                        errors.gender ||
-                        errors.ktp_no
-                          ? "rgb(255, 239, 239)"
-                          : "",
+                      backgroundColor: isErrorTabEmployeeInformation
+                        ? "rgb(229, 72, 77)"
+                        : "",
+                      color: isErrorTabEmployeeInformation
+                        ? "rgb(255, 239, 239)"
+                        : "",
                     },
                   "& .MuiButtonBase-root.MuiTab-root.MuiTab-textColorPrimary.tab_1":
                     {
-                      backgroundColor:
-                        errors.name ||
-                        errors.dob ||
-                        errors.gender ||
-                        errors.ktp_no
-                          ? "rgb(255, 239, 239)"
-                          : "",
-                      color:
-                        errors.name ||
-                        errors.dob ||
-                        errors.gender ||
-                        errors.ktp_no
-                          ? "rgb(229, 72, 77)"
-                          : "",
+                      backgroundColor: isErrorTabEmployeeInformation
+                        ? "rgb(255, 239, 239)"
+                        : "",
+                      color: isErrorTabEmployeeInformation
+                        ? "rgb(229, 72, 77)"
+                        : "",
                     },
                   "& .MuiButtonBase-root.MuiTab-root.MuiTab-textColorPrimary.Mui-selected.tab_2":
                     {
-                      backgroundColor:
-                        errors.type || errors.contract_start_date
-                          ? "rgb(229, 72, 77)"
-                          : "",
-                      color:
-                        errors.type || errors.contract_start_date
-                          ? "rgb(255, 239, 239)"
-                          : "",
+                      backgroundColor: isErrorTabContractInformation
+                        ? "rgb(229, 72, 77)"
+                        : "",
+                      color: isErrorTabContractInformation
+                        ? "rgb(255, 239, 239)"
+                        : "",
                     },
                   "& .MuiButtonBase-root.MuiTab-root.MuiTab-textColorPrimary.tab_2":
                     {
-                      backgroundColor:
-                        errors.type || errors.contract_start_date
-                          ? "rgb(255, 239, 239)"
-                          : "",
-                      color:
-                        errors.type || errors.contract_start_date
-                          ? "rgb(229, 72, 77)"
-                          : "",
+                      backgroundColor: isErrorTabContractInformation
+                        ? "rgb(255, 239, 239)"
+                        : "",
+                      color: isErrorTabContractInformation
+                        ? "rgb(229, 72, 77)"
+                        : "",
                     },
                   "& .MuiButtonBase-root.MuiTab-root.MuiTab-textColorPrimary.Mui-selected.tab_3":
                     {
-                      backgroundColor:
-                        errors.basic_salary ||
-                        errors.audit_salary ||
-                        errors.safety_insurance ||
-                        errors.health_insurance ||
-                        errors.meal_allowance
-                          ? "rgb(229, 72, 77)"
-                          : "",
-                      color:
-                        errors.basic_salary ||
-                        errors.audit_salary ||
-                        errors.safety_insurance ||
-                        errors.health_insurance ||
-                        errors.meal_allowance
-                          ? "rgb(255, 239, 239)"
-                          : "",
+                      backgroundColor: isErrorTabSalaryAndWages
+                        ? "rgb(229, 72, 77)"
+                        : "",
+                      color: isErrorTabSalaryAndWages
+                        ? "rgb(255, 239, 239)"
+                        : "",
                     },
                   "& .MuiButtonBase-root.MuiTab-root.MuiTab-textColorPrimary.tab_3":
                     {
-                      backgroundColor:
-                        errors.basic_salary ||
-                        errors.audit_salary ||
-                        errors.safety_insurance ||
-                        errors.health_insurance ||
-                        errors.meal_allowance
-                          ? "rgb(255, 239, 239)"
-                          : "",
-                      color:
-                        errors.basic_salary ||
-                        errors.audit_salary ||
-                        errors.safety_insurance ||
-                        errors.health_insurance ||
-                        errors.meal_allowance
-                          ? "rgb(229, 72, 77)"
-                          : "",
+                      backgroundColor: isErrorTabSalaryAndWages
+                        ? "rgb(255, 239, 239)"
+                        : "",
+                      color: isErrorTabSalaryAndWages ? "rgb(229, 72, 77)" : "",
                     },
                 }}
               >
@@ -495,16 +536,7 @@ export default function FormEmployee({
                   label="Employee Information"
                   {...indexProps(0)}
                   className="tab_1"
-                  icon={
-                    errors?.name ||
-                    errors?.gender ||
-                    errors?.dob ||
-                    errors?.ktp_no ? (
-                      <IconError />
-                    ) : (
-                      ""
-                    )
-                  }
+                  icon={isErrorTabEmployeeInformation ? <IconError /> : ""}
                   iconPosition="end"
                   sx={{}}
                 />
@@ -512,13 +544,7 @@ export default function FormEmployee({
                   label="Contract Information"
                   {...indexProps(1)}
                   className="tab_2"
-                  icon={
-                    errors?.contract_start_date || errors?.type ? (
-                      <IconError />
-                    ) : (
-                      ""
-                    )
-                  }
+                  icon={isErrorTabContractInformation ? <IconError /> : ""}
                   iconPosition="end"
                   sx={{}}
                 />
@@ -527,17 +553,7 @@ export default function FormEmployee({
                   label="Salary & Wages"
                   {...indexProps(3)}
                   className="tab_3"
-                  icon={
-                    errors?.basic_salary ||
-                    errors?.audit_salary ||
-                    errors?.safety_insurance ||
-                    errors?.health_insurance ||
-                    errors?.meal_allowance ? (
-                      <IconError />
-                    ) : (
-                      ""
-                    )
-                  }
+                  icon={isErrorTabSalaryAndWages ? <IconError /> : ""}
                   iconPosition="end"
                 />
                 <Tab label="Others" {...indexProps(4)} icon={""} />
@@ -545,7 +561,7 @@ export default function FormEmployee({
             </Box>
             <Paper elevation={0}>
               <Form className={cx("css-1beu6n4")} id="employee-form">
-                <CustomTabPanel value={value} index={0}>
+                <CustomTabPanel value={activeTab} index={0}>
                   <HeaderTabPanel title="Personal Information" required />
                   <FormPersonalInformation
                     errors={errors}
@@ -553,22 +569,22 @@ export default function FormEmployee({
                     marriageItems={marriageList}
                   />
                 </CustomTabPanel>
-                <CustomTabPanel value={value} index={1}>
+                <CustomTabPanel value={activeTab} index={1}>
                   <HeaderTabPanel title="Contract Information" required />
                   <FormContractInformation errors={errors} touched={touched} />
                 </CustomTabPanel>
-                <CustomTabPanel value={value} index={2}>
+                <CustomTabPanel value={activeTab} index={2}>
                   <HeaderTabPanel title="Employment Details" />
                   <FormEmploymentDetails
                     departmentItems={departmentList}
                     positionItems={positionList}
                   />
                 </CustomTabPanel>
-                <CustomTabPanel value={value} index={3}>
+                <CustomTabPanel value={activeTab} index={3}>
                   <HeaderTabPanel title="Salary & Wages" />
                   <FormSalaryAndWages errors={errors} touched={touched} />
                 </CustomTabPanel>
-                <CustomTabPanel value={value} index={4}>
+                <CustomTabPanel value={activeTab} index={4}>
                   <HeaderTabPanel title="Others" />
                   <FormOthers
                     gradeItems={gradeList}

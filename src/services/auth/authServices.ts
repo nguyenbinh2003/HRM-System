@@ -12,6 +12,10 @@ class AuthService extends BaseServices {
   forgotPassword(data: object = {}) {
     return this.post("/forgot-password", data, {});
   }
+
+  resetPassword(data: object = {}) {
+    return this.post("/change-password", data, {});
+  }
 }
 
 export default AuthService;

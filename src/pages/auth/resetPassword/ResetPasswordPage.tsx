@@ -56,11 +56,6 @@ export default function ChangePasswordPage() {
             maxWidth: "272px",
             marginLeft: "10px",
             marginRight: "10px",
-
-            "& .MuiButtonBase-root:hover": {
-              backgroundColor: "rgb(0, 129, 241)",
-              boxShadow: "none",
-            },
           }}
         >
           <ResetPasswordForm />

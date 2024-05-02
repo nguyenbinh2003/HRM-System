@@ -22,8 +22,14 @@ class EmployeeServices extends BaseServices {
     return this.post("/employee", data);
   }
 
+  uploadEmployeeDocs(data: object) {
+    return this.post(`/employee-document/upload`, data, {
+      "Content-Type": "multipart/form-data",
+    });
+  }
+
   updateEmployee(id: number, data: object) {
-    return this.put(`/employee/${id}`, data); 
+    return this.put(`/employee/${id}`, data);
   }
 
   deleteEmployee(data: GridRowId[]) {

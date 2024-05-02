@@ -40,7 +40,6 @@ export default function ModalDelete({
     setIsLoading(true);
     const deleteEmployee = await EmployeeService.deleteEmployee(data);
     if (!!deleteEmployee) {
-      console.log(deleteEmployee);
       setShow(false);
       handleGetEmployee(
         Number(params.get("page") || 1),

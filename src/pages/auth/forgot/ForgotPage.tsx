@@ -11,7 +11,7 @@ export default function ForgotPage() {
         <img src={logo} alt="" />
       </div>
       <div
-        style={{ marginTop: "0" }}
+        style={{ marginTop: "0", width: "100%" }}
         className="d-flex align-items-center flex-column"
       >
         <h3 className="mb-4">Forgot Password</h3>

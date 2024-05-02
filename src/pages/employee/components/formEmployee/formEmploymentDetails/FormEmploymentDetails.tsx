@@ -69,7 +69,7 @@ export default function FormEmploymentDetails({
                 name="department_id"
                 menuItems={departmentItems}
                 renderValue={(selected: any) => {
-                  if (selected.length === 0) {
+                  if (!selected) {
                     return (
                       <Typography
                         variant="body1"
@@ -83,8 +83,7 @@ export default function FormEmploymentDetails({
                         Choose Department
                       </Typography>
                     );
-                  }
-                  return handleFindContentDepartment(selected);
+                  } else return handleFindContentDepartment(Number(selected));
                 }}
               />
             </FormControl>
@@ -102,7 +101,7 @@ export default function FormEmploymentDetails({
                 name="position_id"
                 menuItems={positionItems}
                 renderValue={(selected: any) => {
-                  if (selected.length === 0) {
+                  if (!selected) {
                     return (
                       <Typography
                         variant="body1"
@@ -116,8 +115,7 @@ export default function FormEmploymentDetails({
                         Choose Position
                       </Typography>
                     );
-                  }
-                  return handleFindContentPosition(selected);
+                  } else return handleFindContentPosition(Number(selected));
                 }}
               />
             </FormControl>

@@ -1,8 +1,9 @@
-import { MenuItem, TextField } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { Field } from "formik";
-import { IconDown } from "../icons/icons";
 import { useFormikContext } from "formik";
+
+import { IconDown } from "../icons/icons";
 
 export default function CustomSelectField({
   name,
@@ -10,12 +11,10 @@ export default function CustomSelectField({
   sx,
   multiple,
   renderValue,
-  placeholder,
 }: {
   name: string;
   menuItems: object[];
   sx?: any;
-  placeholder?: string;
   multiple?: boolean;
   renderValue?: any;
 }) {
@@ -30,7 +29,7 @@ export default function CustomSelectField({
         as={Select}
         multiple={multiple}
         renderValue={renderValue}
-        
+        variant="filled"
         onChange={(e: SelectChangeEvent) => {
           formik.setFieldValue(name, e.target.value);
         }}

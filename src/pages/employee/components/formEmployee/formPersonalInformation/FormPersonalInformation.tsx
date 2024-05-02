@@ -5,8 +5,13 @@ import Textarea from "@mui/joy/Textarea";
 import CustomFieldText from "@/src/components/customFieldText/CustomFieldText";
 import CustomSelectField from "@/src/components/customSelectField/CustomSelectField";
 import CustomDateField from "@/src/components/customDateField/CustomDateField";
+import { FormikErrors, FormikTouched } from "formik";
+import {
+  IEmployeeData,
+  IGenderItem,
+} from "@/src/interfaces/formInterfaces";
 
-const menuGenderItems: object[] = [
+const menuGenderItems: IGenderItem[] = [
   { value: 0, content: "Male" },
   { value: 1, content: "Female" },
 ];
@@ -16,11 +21,11 @@ export default function FormPersonalInformation({
   touched,
   marriageItems,
 }: {
-  errors: any;
-  touched: any;
+  errors: FormikErrors<IEmployeeData>;
+  touched: FormikTouched<IEmployeeData>;
   marriageItems: object[];
 }) {
-  const marriageCopy = [...marriageItems];
+  const marriageCopy: object[] = [...marriageItems];
   const handleFindContentMarriage = (value: number) => {
     const marriage: any = marriageCopy.find((item: any) => {
       return item.value === value;
@@ -32,9 +37,11 @@ export default function FormPersonalInformation({
   };
 
   const handleFindContentGender = (value: number) => {
-    const gender: any = menuGenderItems.find((item: any) => {
-      return item.value === value;
-    });
+    const gender: IGenderItem | undefined = menuGenderItems.find(
+      (item: IGenderItem) => {
+        return item.value === value;
+      }
+    );
     if (!!gender) {
       return gender.content;
     }
@@ -143,7 +150,7 @@ export default function FormPersonalInformation({
                 name="gender"
                 menuItems={menuGenderItems}
                 renderValue={(selected: any) => {
-                  if (!!selected) {
+                  if (selected.length === 0) {
                     return (
                       <Typography
                         variant="body1"
@@ -155,8 +162,9 @@ export default function FormPersonalInformation({
                         Choose Gender
                       </Typography>
                     );
+                  } else {
+                    return handleFindContentGender(selected);
                   }
-                  return handleFindContentGender(selected);
                 }}
                 sx={{
                   "& .MuiInputBase-input": {
@@ -313,12 +321,54 @@ export default function FormPersonalInformation({
         </Grid>
         <Grid container>
           <Grid sm={4}>
-            <Typography variant="body1">Tax ID</Typography>
+            <Typography variant="body1">
+              National Card ID
+              <span
+                className=""
+                style={{
+                  color: "rgb(229, 72, 77)",
+                  fontSize: "16px",
+                }}
+              >
+                *
+              </span>
+            </Typography>
           </Grid>
           <Grid sm={8}>
             <FormControl>
-              <CustomFieldText name="nc_id" />
+              <CustomFieldText
+                name="nc_id"
+                sx={{
+                  "& .MuiInputBase-input": {
+                    border:
+                      errors.nc_id &&
+                      touched.nc_id &&
+                      "1px solid rgb(243, 174, 175)",
+                    borderRadius: errors.nc_id && touched.nc_id && "6px",
+                    backgroundColor:
+                      errors.nc_id &&
+                      touched.nc_id &&
+                      "rgb(255, 239, 239) !important",
+                  },
+                }}
+              />
             </FormControl>
+            {errors.nc_id && touched.nc_id && (
+              <FormHelperText
+                sx={{
+                  color: "rgb(229, 72, 77)",
+                  lineHeight: 1.5,
+                  fontSize: "12px",
+                  fontFamily:
+                    '"SVN-Sofia Pro Regular", "Public Sans", sans-serif',
+                  fontWeight: 400,
+                  textAlign: "left",
+                  margin: "3px 14px 0px",
+                }}
+              >
+                {errors.nc_id}
+              </FormHelperText>
+            )}
           </Grid>
         </Grid>
         <Grid container>
@@ -380,9 +430,8 @@ export default function FormPersonalInformation({
             <FormControl>
               <CustomSelectField
                 name="marriage_id"
-                placeholder="Choose Marriage Status"
                 renderValue={(selected: any) => {
-                  if (!!selected) {
+                  if (selected.length === 0) {
                     return (
                       <Typography
                         variant="body1"
@@ -394,8 +443,7 @@ export default function FormPersonalInformation({
                         Choose Marriage Status
                       </Typography>
                     );
-                  }
-                  return handleFindContentMarriage(selected);
+                  } else return handleFindContentMarriage(selected);
                 }}
                 menuItems={marriageItems}
               />

@@ -23,16 +23,20 @@ export const changePasswordSchema = Yup.object().shape({
 
 export const employeeSchema = Yup.object().shape({
   name: Yup.string().required("Please input Name"),
-  gender: Yup.string().required("Please input Gender"),
+  gender: Yup.number().integer().required("Please input Gender"),
   dob: Yup.string().required("Please input Date of birth"),
   ktp_no: Yup.string().required("Please input KTP No"),
   contract_start_date: Yup.string().required(
     "Please input Contract Start Date"
   ),
-  type: Yup.number().required("Please input Employee Type"),
-  nc_id: Yup.string(),
-  safety_insurance: Yup.number().required("Please input Safety Insurance Amount"),
-  health_insurance: Yup.number().required("Please input Healthy Insurance Amount"),
+  type: Yup.number().integer().required("Please input Employee Type"),
+  nc_id: Yup.string().required("Please input National Card ID "),
+  safety_insurance: Yup.number().required(
+    "Please input Safety Insurance Amount"
+  ),
+  health_insurance: Yup.number().required(
+    "Please input Healthy Insurance Amount"
+  ),
   meal_allowance: Yup.number().required("Please input Meal Allowance"),
   basic_salary: Yup.number().required("Please input Basic Salary"),
   audit_salary: Yup.number().required("Please input Basic Salary (Audit)"),
@@ -49,14 +53,14 @@ export const employeeSchema = Yup.object().shape({
   family_card_number: Yup.string(),
   safety_insurance_no: Yup.string(),
   health_insurance_no: Yup.string(),
-  department_id: Yup.number(),
-  position_id: Yup.number(),
+  department_id: Yup.number().integer(),
+  position_id: Yup.number().integer(),
   shift: Yup.string(),
   entitle_ot: Yup.string(),
   meal_allowance_paid: Yup.string(),
   operational_allowance_paid: Yup.string(),
   attendance_allowance_paid: Yup.string(),
-  grade_id: Yup.number(),
+  grade_id: Yup.number().integer(),
   remark: Yup.string(),
   benefits: Yup.array(),
   account_user_id: Yup.string(),
@@ -64,4 +68,6 @@ export const employeeSchema = Yup.object().shape({
   emergency_name: Yup.string(),
   emergency_relationship: Yup.string(),
   emergency_contract: Yup.string(),
+  documents: Yup.array(),
+  deleted_ids: Yup.array(),
 });

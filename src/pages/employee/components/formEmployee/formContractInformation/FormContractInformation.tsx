@@ -48,7 +48,7 @@ export default function FormContractInformation({
 }) {
   const handleFindContentType = (value: number) => {
     const type: any = menuItemEmployee.find((item: any) => {
-      return item.value === value;
+      return item.value === Number(value);
     });
     if (!!type) {
       return type.content;
@@ -165,8 +165,9 @@ export default function FormContractInformation({
                           Choose Type
                         </Typography>
                       );
+                    } else {
+                      return handleFindContentType(selected);
                     }
-                    return handleFindContentType(selected);
                   }}
                   sx={{
                     border:
@@ -458,6 +459,8 @@ export default function FormContractInformation({
               component={Paper}
               elevation={0}
               sx={{
+                maxHeight: "225px",
+                minHeight: "225px",
                 "& .MuiTableRow-root": {
                   outline: 0,
                 },
@@ -480,10 +483,10 @@ export default function FormContractInformation({
               <Table sx={{}} aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>No</TableCell>
-                    <TableCell>Contract Name</TableCell>
-                    <TableCell>Sign Date</TableCell>
-                    <TableCell>Action</TableCell>
+                    <TableCell align="center">No</TableCell>
+                    <TableCell align="center">Contract Name</TableCell>
+                    <TableCell align="center">Sign Date</TableCell>
+                    <TableCell align="center">Action</TableCell>
                   </TableRow>
                 </TableHead>
               </Table>

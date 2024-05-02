@@ -4,12 +4,11 @@ import { Button, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Dropdown, MenuProps, Space } from "antd";
 import { useNavigate } from "react-router-dom";
-import classNames from "classnames/bind";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { BiError } from "react-icons/bi";
 
-import styles from "./Header.module.scss";
+
 import logo from "@/src/assets/Rectangle 4.png";
 import UserServices from "@/src/services/user/userServices";
 import { addUserStore, clearUserStore } from "@/src/stores/userReducer";
@@ -17,7 +16,6 @@ import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
 
 const UserService = new UserServices();
 
-const cx = classNames.bind(styles);
 
 function Header() {
   const navigate = useNavigate();
@@ -109,7 +107,7 @@ function Header() {
     const user = await UserService.getUserDetail();
 
     if (user.status < 400) {
-      dispatch(addUserStore(user.data));
+      dispatch(addUserStore(user.data.data));
     }
   };
 
@@ -122,7 +120,13 @@ function Header() {
       collapseOnSelect
       expand="lg"
       className="bg-body-tertiary shadow "
-      style={{ position: "sticky", zIndex: 1001, height: "auto", top: "0" }}
+      style={{
+        position: "sticky",
+        zIndex: 1001,
+        height: "auto",
+        top: "0",
+        padding: "5px 0",
+      }}
     >
       <div
         className="d-flex flex-row align-items-center"

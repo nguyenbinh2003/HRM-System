@@ -3,11 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   DataGrid,
-  GridCallbackDetails,
   GridEventListener,
   GridRowParams,
   GridRowSelectionModel,
-  MuiEvent,
 } from "@mui/x-data-grid";
 import { Paper } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
@@ -47,8 +45,8 @@ export default function EmployeePage() {
     useState<GridRowSelectionModel>([]);
   const [isShowModalDelete, setIsShowModalDelete] = useState<boolean>(false);
 
-  const handleOpen = () => setIsShowModalDelete(true);
-  const handleClose = () => setIsShowModalDelete(false);
+  const handleOpenModalDelete = () => setIsShowModalDelete(true);
+  const handleCloseModalDelete = () => setIsShowModalDelete(false);
 
   const handleGetEmployee = async (page?: number, search?: string) => {
     setIsLoading(true);
@@ -94,7 +92,7 @@ export default function EmployeePage() {
     return;
   };
 
-  const handleOnChange = useCallback(
+  const handleOnChangeValueSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
 
@@ -114,6 +112,7 @@ export default function EmployeePage() {
   ) => {
     navigate(`/employee/create-or-update/${params.id}`);
   };
+  
   useEffect(() => {
     setParams({
       page: String(params.get("page") === null ? 1 : paginationModel.page + 1),
@@ -155,7 +154,7 @@ export default function EmployeePage() {
                 type="text"
                 placeholder="Search..."
                 defaultValue={String(params.get("search") || "")}
-                onChange={(e) => handleOnChange(e)}
+                onChange={(e) => handleOnChangeValueSearch(e)}
                 onFocus={() => setIsfocus(true)}
                 onBlur={() => setIsfocus(false)}
               />
@@ -187,7 +186,7 @@ export default function EmployeePage() {
                 toolbar: () => (
                   <CustomToolbar
                     isDisabled={isDisabled}
-                    handleOnShow={handleOpen}
+                    handleOnShow={handleOpenModalDelete}
                   />
                 ),
                 pagination: CustomPagination,
@@ -211,7 +210,7 @@ export default function EmployeePage() {
         isShow={isShowModalDelete}
         rowSelectionModel={rowSelectionModel}
         handleGetEmployee={handleGetEmployee}
-        handleClose={handleClose}
+        handleClose={handleCloseModalDelete}
         setShow={setIsShowModalDelete}
       />
     </>

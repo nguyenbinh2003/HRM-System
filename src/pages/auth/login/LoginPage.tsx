@@ -1,7 +1,6 @@
 import logo from "@/src/assets/logo.png";
 import LoginForm from "./loginForm/LoginForm";
 
-
 export default function LoginPage() {
   return (
     <div
@@ -12,7 +11,7 @@ export default function LoginPage() {
         <img src={logo} alt="" />
       </div>
       <div
-        style={{ marginTop: "0" }}
+        style={{ marginTop: "0", width: "100%" }}
         className="d-flex align-items-center flex-column"
       >
         <h3 className="mb-4">Sign In</h3>
