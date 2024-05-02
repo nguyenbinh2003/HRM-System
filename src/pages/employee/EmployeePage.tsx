@@ -109,9 +109,7 @@ export default function EmployeePage() {
 
   const handleDoubleClickRow: GridEventListener<"rowDoubleClick"> = (
     params: GridRowParams
-  ) => {
-    navigate(`/employee/create-or-update/${params.id}`);
-  };
+  ) => navigate(`/employee/create-or-update/${params.id}`);
   
   useEffect(() => {
     setParams({

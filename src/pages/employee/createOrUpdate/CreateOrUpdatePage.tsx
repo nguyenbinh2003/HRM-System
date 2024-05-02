@@ -5,7 +5,7 @@ import { SetStateAction, useEffect, useRef, useState } from "react";
 import { MoonLoader } from "react-spinners";
 
 import styles from "./CreateOrUpdatePage.module.scss";
-import FormEmployee from "../components/formEmployee/FormEmployee";
+import FormEmployee from "@/src/pages/employee/createOrUpdate/formEmployee/FormEmployee";
 import EmployeeServices from "@/src/services/employee/employeeServices";
 import { IEmployeeData } from "@/src/interfaces/formInterfaces";
 import { AxiosResponse } from "axios";
