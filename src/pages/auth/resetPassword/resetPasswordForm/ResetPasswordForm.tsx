@@ -7,6 +7,7 @@ import { Box } from "@mui/system";
 import { SetStateAction, useState } from "react";
 import { BiError } from "react-icons/bi";
 import { MoonLoader } from "react-spinners";
+import { AxiosResponse } from "axios";
 
 import { changePasswordSchema } from "@/src/utils/formSchema";
 import AuthServices from "@/src/services/auth/authServices";
@@ -18,7 +19,7 @@ const AuthService = new AuthServices();
 const handleSubmit = async (data: object, setSubmit: SetStateAction<any>) => {
   setSubmit(true);
 
-  const reset = await AuthService.resetPassword(data);
+  const reset: AxiosResponse<any> = await AuthService.resetPassword(data);
   if (reset.status < 400) {
     toast.success("Success", {
       icon: () => <img src={checkCircle} alt="" />,

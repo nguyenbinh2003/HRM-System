@@ -10,6 +10,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { FormHelperText, Paper, Typography } from "@mui/material";
 import { MoonLoader } from "react-spinners";
 import { Box } from "@mui/system";
+import { AxiosResponse } from "axios";
 
 import { loginSchema } from "@/src/utils/formSchema";
 import AuthService from "@/src/services/auth/authServices";
@@ -36,7 +37,7 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const handleSubmit = async (data: object) => {
     setIsSignIn(true);
-    const login = await AuthServices.login(data);
+    const login: AxiosResponse<any> = await AuthServices.login(data);
     if (login.status < 400) {
       localStorage.setItem("user-token", login.data.data.token);
       toast.success("Sign in successfully.", {

@@ -7,12 +7,13 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { FormHelperText, Paper, Typography } from "@mui/material";
 import { MoonLoader } from "react-spinners";
 import { useState } from "react";
+import { Box } from "@mui/system";
+import { AxiosResponse } from "axios";
 
 import { forgotSchema } from "@/src/utils/formSchema";
 import AuthService from "@/src/services/auth/authServices";
 import checkCircle from "@/src/assets/check-circle.png";
 import CustomFieldText from "@/src/components/customFieldText/CustomFieldText";
-import { Box } from "@mui/system";
 
 const AuthServices = new AuthService();
 
@@ -21,7 +22,7 @@ export default function ForgotForm() {
 
   const handleSubmit = async (data: object) => {
     setIsSendEmail(true);
-    const forgot = await AuthServices.forgotPassword(data);
+    const forgot: AxiosResponse<any> = await AuthServices.forgotPassword(data);
     if (forgot.status < 400) {
       toast.success("We have sent you the OTP code, please check your email.", {
         icon: () => <img src={checkCircle} alt="" />,

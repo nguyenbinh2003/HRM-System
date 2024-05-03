@@ -89,15 +89,20 @@ const handleAddNewEmployee = async (
   setIsSubmitting: React.SetStateAction<any>
 ) => {
   const { documents, deleted_ids, ...data } = values;
+
   setIsSubmitting(true);
-  const add = await EmployeeService.addNewEmployee(data);
+  const add: AxiosResponse<any> = await EmployeeService.addNewEmployee(data);
 
   if (add.status < 400) {
-    await EmployeeService.uploadEmployeeDocs({
-      employee_id: add.data.data.id,
-      documents,
-      deleted_ids,
-    });
+    if (!!documents) {
+      const newDocs = documents.filter((item: any) => item instanceof File);
+
+      await EmployeeService.uploadEmployeeDocs({
+        employee_id: add.data.data.id,
+        documents: newDocs,
+        deleted_ids,
+      });
+    }
     navigate("/employee");
     toast.success("Record added", {
       icon: () => <img src={checkCircle} alt="" />,
@@ -129,14 +134,20 @@ const handleUpdateEmployee = async (
   const { documents, deleted_ids, ...data } = values;
 
   setIsSubmitting(true);
-  const update = await EmployeeService.updateEmployee(id, data);
+  const update: AxiosResponse<any> = await EmployeeService.updateEmployee(
+    id,
+    data
+  );
 
   if (update.status < 400) {
-    await EmployeeService.uploadEmployeeDocs({
-      employee_id: id,
-      documents,
-      deleted_ids,
-    });
+    if (!!documents) {
+      const newDocs = documents.filter((item: any) => item instanceof File);
+      await EmployeeService.uploadEmployeeDocs({
+        employee_id: id,
+        documents: newDocs,
+        deleted_ids,
+      });
+    }
     navigate("/employee");
     toast.success("Change saved", {
       icon: () => <img src={checkCircle} alt="" />,

@@ -88,13 +88,6 @@ class BaseServices {
     });
   }
 
-  putAvatar(url: string, data: object, configHeaders?: object) {
-    return this.http.put(url, data, {
-      ...this.setConfigHeadersUploadImg(),
-      ...configHeaders,
-    });
-  }
-
   patch(url: string, data: object, configHeaders?: object): Promise<any> {
     return this.http.patch(url, data, {
       ...this.setConfigHeaders(),

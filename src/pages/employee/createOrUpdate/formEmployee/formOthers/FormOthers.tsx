@@ -3,7 +3,6 @@ import {
   Button,
   Chip,
   FormControl,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -18,17 +17,11 @@ import { useFormikContext } from "formik";
 import { AiOutlineClose } from "react-icons/ai";
 import { styled } from "@mui/system";
 import { HiOutlineUpload } from "react-icons/hi";
-import { useParams } from "react-router-dom";
 import { RxTrash } from "react-icons/rx";
 
 import CustomSelectField from "@/src/components/customSelectField/CustomSelectField";
 import { getFileNameFromURL, handleFormatDate } from "@/src/utils/utils";
 import { IconDownload } from "@/src/components/icons/icons";
-import {
-  IBenefitList,
-  IGenderItem,
-  IGradeList,
-} from "@/src/interfaces/formInterfaces";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -239,6 +232,9 @@ export default function FormOthers({
                   Upload file
                   <VisuallyHiddenInput
                     onChange={(e: any) => {
+                      console.log(e.target.files[0] instanceof File);
+                      console.log(e.target.files[0]);
+
                       handleOnChangeFile(e.target.files[0]);
                     }}
                     type="file"
@@ -327,7 +323,7 @@ export default function FormOthers({
                 {!!documents
                   ? documents.map((item: any, index: number) => {
                       const date = new Date(
-                        item.lastModifiedDate || item.create_at
+                        item.lastModifiedDate || item.created_at
                       );
                       return (
                         <TableRow key={index}>
