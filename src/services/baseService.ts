@@ -21,10 +21,10 @@ class BaseServices {
           switch (response.status) {
             case 400:
               return response;
-            case 401:
-              localStorage.clear();
-              window.location.reload();
-              return;
+            // case 401:
+            //   localStorage.clear();
+            //   window.location.reload();
+              return response;
             case 403:
               // window.location.href = "/error";
               return response;
