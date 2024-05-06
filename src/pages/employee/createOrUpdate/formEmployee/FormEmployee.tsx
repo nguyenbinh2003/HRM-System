@@ -89,14 +89,13 @@ const handleAddNewEmployee = async (
   setIsSubmitting: React.SetStateAction<any>
 ) => {
   const { documents, deleted_ids, ...data } = values;
+  const newDocs = documents.filter((item: any) => item instanceof File);
 
   setIsSubmitting(true);
   const add: AxiosResponse<any> = await EmployeeService.addNewEmployee(data);
 
   if (add.status < 400) {
-    if (!!documents) {
-      const newDocs = documents.filter((item: any) => item instanceof File);
-
+    if (newDocs.length > 0) {
       await EmployeeService.uploadEmployeeDocs({
         employee_id: add.data.data.id,
         documents: newDocs,
@@ -132,6 +131,7 @@ const handleUpdateEmployee = async (
   setIsSubmitting: React.SetStateAction<any>
 ) => {
   const { documents, deleted_ids, ...data } = values;
+  const newDocs = documents.filter((item: any) => item instanceof File);
 
   setIsSubmitting(true);
   const update: AxiosResponse<any> = await EmployeeService.updateEmployee(
@@ -140,8 +140,7 @@ const handleUpdateEmployee = async (
   );
 
   if (update.status < 400) {
-    if (!!documents) {
-      const newDocs = documents.filter((item: any) => item instanceof File);
+    if (newDocs.length > 0) {
       await EmployeeService.uploadEmployeeDocs({
         employee_id: id,
         documents: newDocs,
