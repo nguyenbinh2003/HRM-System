@@ -45,7 +45,7 @@ export default function ModalDelete({
     const deleteEmployee = await EmployeeService.deleteEmployee(data);
     if (!!deleteEmployee) {
       setRowSelectionModel([]);
-      setIsDisabled(true);
+      setIsDisabled(true)
       setShow(false);
       handleGetEmployee(
         Number(params.get("page") || 1),
