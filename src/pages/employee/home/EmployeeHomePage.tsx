@@ -207,9 +207,11 @@ export default function EmployeePage() {
       <ModalDelete
         isShow={isShowModalDelete}
         rowSelectionModel={rowSelectionModel}
+        setRowSelectionModel={setRowSelectionModel}
+        setShow={setIsShowModalDelete}
+        setIsDisabled={setIsDisabled}
         handleGetEmployee={handleGetEmployee}
         handleClose={handleCloseModalDelete}
-        setShow={setIsShowModalDelete}
       />
     </>
   );

@@ -16,7 +16,7 @@ import { useSearchParams } from "react-router-dom";
 
 import EmployeeServices from "@/src/services/employee/employeeServices";
 import checkCircle from "@/src/assets/check-circle.png";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 
 const EmployeeService = new EmployeeServices();
 
@@ -26,20 +26,26 @@ export default function ModalDelete({
   handleClose,
   setShow,
   handleGetEmployee,
+  setRowSelectionModel,
+  setIsDisabled,
 }: {
   isShow: boolean;
   rowSelectionModel: GridRowId[];
   setShow: (val: boolean) => void;
   handleClose: () => void;
   handleGetEmployee: (page: number, search: string) => void;
+  setRowSelectionModel: SetStateAction<any>;
+  setIsDisabled: SetStateAction<any>;
 }) {
-  const [params, setParams] = useSearchParams();
+  const [params, _] = useSearchParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleDelete = async (data: GridRowId[]) => {
     setIsLoading(true);
     const deleteEmployee = await EmployeeService.deleteEmployee(data);
     if (!!deleteEmployee) {
+      setRowSelectionModel([]);
+      setIsDisabled(true);
       setShow(false);
       handleGetEmployee(
         Number(params.get("page") || 1),
