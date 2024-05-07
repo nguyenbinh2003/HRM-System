@@ -23,11 +23,7 @@ class EmployeeServices extends BaseServices {
   }
 
   uploadEmployeeDocs(data: object) {
-    return this.post(`/employee-document/upload`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    return this.postFile(`/employee-document/upload`, data);
   }
 
   updateEmployee(id: number, data: object) {

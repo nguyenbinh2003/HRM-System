@@ -52,11 +52,11 @@ class BaseServices {
     return config;
   }
 
-  setConfigHeadersUploadImg() {
+  setConfigHeadersUploadFile() {
     const userToken = localStorage.getItem("user-token");
     const config = {
       headers: {
-        Authorization: userToken,
+        Authorization: `Bearer ${userToken}`,
         "Content-Type": "multipart/form-data;",
       },
       ...this.configHeaders,
@@ -73,6 +73,12 @@ class BaseServices {
     });
   }
 
+  postFile(url: string, data: any, configHeaders?: any) {
+    return this.http.post(url, data, {
+      ...this.setConfigHeadersUploadFile(),
+      ...configHeaders,
+    });
+  }
   /**
    * Sends a PUT request to the specified URL with the provided data and headers.
    *
